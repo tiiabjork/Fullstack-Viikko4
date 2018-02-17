@@ -4,17 +4,16 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-// const middleware = require('./utils/middleware')
+const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
+const config = require('./utils/config')
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
+console.log(config.mongoUrl)
 
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(config.mongoUrl)
   .then( () => {
-    console.log('connected to database', process.env.MONGODB_URI)
+    console.log('connected to database', config.mongoUrl)
   })
   .catch( err => {
     console.log(err)
@@ -25,13 +24,22 @@ mongoose.Promise = global.Promise
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('build'))
-// tätä ei oo vielä app.use(middleware.logger)
+app.use(middleware.logger)
 
 app.use('/api/blogs', blogsRouter)
 
-// app.use(middleware.error)
+app.use(middleware.error)
 
-const PORT = 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+const server = http.createServer(app)
+
+server.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`)
 })
+
+server.on('close', () => {
+  mongoose.connection.close()
+})
+
+module.exports = {
+  app, server
+}
