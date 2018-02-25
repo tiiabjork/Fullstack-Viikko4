@@ -60,8 +60,9 @@ const manyBlogs = [
   }
 ]
 
+
 //Kaikki testit tämän sisällä jotta ne ei näy testeissä nyt
-describe.skip('list helpers', () => {
+//describe.skip('list helpers', () => {
 
 
 describe('total likes', () => {
@@ -156,4 +157,4 @@ describe('blogger with most likes', () => {
   })
 })
 
-})
+//})
