@@ -11,10 +11,17 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs.map(Blog.format))
 })
 
-blogsRouter.post('/', async (request, response) => {
-  try {
-    const body = request.body
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
 
+blogsRouter.post('/', async (request, response) => {
+  const body = request.body
+  try {
     const token = getTokenFrom(request)
     const decodedToken = jwt.verify(token, process.env.SECRET)
 
